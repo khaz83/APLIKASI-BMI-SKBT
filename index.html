@@ -319,7 +319,7 @@
 
             if (email && pass) {
                 try {
-                    await signInAnonymously(auth);
+                    await signInWithEmailAndPassword(auth, email, pass)  ;
                     localStorage.setItem('bmi_isLoggedIn', 'true');
                     localStorage.setItem('bmi_userLabel', email);
                 } catch (e) {
