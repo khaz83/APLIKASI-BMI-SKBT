@@ -24,7 +24,6 @@
             color: #6d28d9;
         }
 
-        /* Gaya Khusus Cetakan */
         @media print {
             .no-print {
                 display: none !important;
@@ -49,7 +48,6 @@
             #tab2 {
                 display: block !important;
             }
-            /* Memastikan jadual penuh pada kertas A4 */
             table {
                 width: 100% !important;
                 border-collapse: collapse !important;
@@ -67,7 +65,7 @@
 </head>
 <body class="min-h-screen">
 
-    <!-- LOGIN SECTION -->
+    <!-- SEKSYEN LOG MASUK -->
     <div id="loginOverlay" class="fixed inset-0 z-[100] purple-gradient flex items-center justify-center p-4 no-print">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center">
             <div class="bg-purple-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -78,10 +76,10 @@
             
             <div class="space-y-4 text-left">
                 <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-500 ml-1 uppercase">Alamat Emel</label>
+                    <label class="text-xs font-bold text-gray-500 ml-1 uppercase">Nama Pengguna / Emel</label>
                     <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="email" id="loginEmail" placeholder="nama@email.com" 
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="loginEmail" placeholder="Masukkan ID anda" 
                             class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all">
                     </div>
                 </div>
@@ -98,14 +96,13 @@
                 <button onclick="handleLogin()" class="w-full py-4 mt-4 purple-gradient text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all uppercase tracking-wide">
                     LOG MASUK
                 </button>
-                <p id="loginError" class="hidden text-red-500 text-center text-sm font-medium mt-2 animate-pulse">E-mel atau Kata laluan salah!</p>
+                <p id="loginError" class="hidden text-red-500 text-center text-sm font-medium mt-2 animate-pulse">Sila masukkan maklumat log masuk yang sah.</p>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP CONTENT -->
+    <!-- KANDUNGAN UTAMA APLIKASI -->
     <div id="appContent" class="hidden">
-        <!-- Header Section -->
         <header class="purple-gradient text-white p-6 shadow-lg no-print">
             <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-3">
@@ -130,7 +127,6 @@
             </div>
         </header>
 
-        <!-- Navigation Tabs -->
         <nav class="bg-white shadow-sm sticky top-0 z-10 no-print">
             <div class="max-w-6xl mx-auto flex overflow-x-auto">
                 <button onclick="switchTab('tab1')" id="btn-tab1" class="flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 tab-active min-w-max">
@@ -146,15 +142,12 @@
         </nav>
 
         <main class="max-w-6xl mx-auto p-4 md:p-8">
-            
-            <!-- Header khusus untuk cetakan -->
             <div class="hidden print-only mb-8 text-center border-b-2 border-black pb-4">
                 <h1 class="text-2xl font-bold uppercase">Laporan BMI Murid SKBT</h1>
                 <p class="text-lg">Kelas: 6 Ar-Razi</p>
                 <p class="text-sm">Tarikh Cetakan: <span id="printDate"></span></p>
             </div>
 
-            <!-- TAB 1: KEMASUKAN -->
             <section id="tab1" class="space-y-6 no-print">
                 <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
                     <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
@@ -170,7 +163,7 @@
                                 <option value="Penggal 2">Penggal Dua</option>
                             </select>
                         </div>
-                        <div class="space-y-2 lg:col-span-1">
+                        <div class="space-y-2">
                             <label class="text-sm font-bold text-gray-600">Nama Murid</label>
                             <select id="nama" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" required>
                                 <option value="" disabled selected>Pilih nama murid...</option>
@@ -219,7 +212,6 @@
                 </div>
             </section>
 
-            <!-- TAB 2: REKOD -->
             <section id="tab2" class="hidden space-y-6">
                 <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-purple-100">
                     <div class="p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-100 no-print">
@@ -233,27 +225,22 @@
                         <table class="w-full text-left">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Bil</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Penggal</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Murid</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Berat (kg)</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Tinggi (m)</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">BMI</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Status</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider no-print text-center">Tindakan</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase">Bil</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase">Penggal</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase">Nama Murid</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Berat (kg)</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Tinggi (m)</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">BMI</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Status</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase no-print text-center">Tindakan</th>
                                 </tr>
                             </thead>
                             <tbody id="rekodTable" class="divide-y divide-gray-100"></tbody>
                         </table>
                     </div>
-                    <div id="emptyState" class="p-12 text-center text-gray-400 no-print">
-                        <i class="fas fa-folder-open text-4xl mb-3"></i>
-                        <p>Tiada rekod dijumpai. Sila tambah rekod baru.</p>
-                    </div>
                 </div>
             </section>
 
-            <!-- TAB 3: ANALISIS -->
             <section id="tab3" class="hidden space-y-6 no-print">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
@@ -281,27 +268,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <span class="w-2 h-8 bg-purple-600 rounded-full mr-3"></span>
-                        Perbandingan: Penggal 1 vs Penggal 2
-                    </h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 border-b">
-                                <tr>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase">Nama Murid</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">BMI P1</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">BMI P2</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Perbezaan</th>
-                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Trend</th>
-                                </tr>
-                            </thead>
-                            <tbody id="comparisonTable" class="divide-y divide-gray-100"></tbody>
-                        </table>
-                    </div>
-                </div>
             </section>
         </main>
     </div>
@@ -309,39 +275,22 @@
     <!-- Edit Modal -->
     <div id="editModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[110] backdrop-blur-sm no-print">
         <div class="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl scale-in">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
-                    <i class="fas fa-edit text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-800">Kemaskini Rekod</h3>
-            </div>
-            
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Kemaskini Rekod</h3>
             <div class="space-y-4">
                 <input type="hidden" id="editDocId">
-                <div>
-                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Nama & Penggal</label>
-                    <input type="text" id="editNama" class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 font-semibold text-gray-500" readonly>
-                </div>
+                <input type="text" id="editNama" class="w-full p-4 border rounded-2xl bg-gray-50 font-semibold" readonly>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Berat (kg)</label>
-                        <input type="number" step="0.1" id="editBerat" class="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none transition-all" placeholder="0.0">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Tinggi (m)</label>
-                        <input type="number" step="0.01" id="editTinggi" class="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none transition-all" placeholder="0.00">
-                    </div>
+                    <input type="number" step="0.1" id="editBerat" class="w-full p-4 border rounded-2xl" placeholder="Berat (kg)">
+                    <input type="number" step="0.01" id="editTinggi" class="w-full p-4 border rounded-2xl" placeholder="Tinggi (m)">
                 </div>
             </div>
-            
             <div class="flex gap-3 mt-8">
-                <button onclick="closeEdit()" class="flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-bold transition-all">BATAL</button>
-                <button onclick="saveEdit()" id="saveEditBtn" class="flex-1 py-4 purple-gradient text-white rounded-2xl font-bold shadow-lg hover:opacity-90 transition-all">SIMPAN</button>
+                <button onclick="closeEdit()" class="flex-1 py-4 bg-gray-100 rounded-2xl font-bold">BATAL</button>
+                <button onclick="saveEdit()" id="saveEditBtn" class="flex-1 py-4 purple-gradient text-white rounded-2xl font-bold">SIMPAN</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -360,25 +309,21 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         const appId = "aplikasi-bmi-skbt";
-
-        const ALLOWED_EMAILS = ["kazfa2000@gmail.com", "g-81430999@moe-dl.edu.my"];
-        const DEFAULT_PASS = "jba2054";
         let dataMurid = [];
         let myChart = null;
 
-        // --- AUTH LOGIC ---
         window.handleLogin = async function() {
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
             const error = document.getElementById('loginError');
 
-            if (ALLOWED_EMAILS.includes(email) && pass === DEFAULT_PASS) {
+            if (email && pass) {
                 try {
                     await signInAnonymously(auth);
                     localStorage.setItem('bmi_isLoggedIn', 'true');
-                    localStorage.setItem('bmi_userEmail', email);
+                    localStorage.setItem('bmi_userLabel', email);
                 } catch (e) {
-                    console.error("Auth error", e);
+                    error.classList.remove('hidden');
                 }
             } else {
                 error.classList.remove('hidden');
@@ -386,31 +331,28 @@
         };
 
         window.handleLogout = async function() {
-            if(confirm('Log keluar sistem?')) {
-                await signOut(auth);
-                localStorage.clear();
-                location.reload();
-            }
+            await signOut(auth);
+            localStorage.clear();
+            location.reload();
         };
 
         onAuthStateChanged(auth, (user) => {
             if (user && localStorage.getItem('bmi_isLoggedIn') === 'true') {
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('appContent').classList.remove('hidden');
-                document.getElementById('userDisplay').innerText = `Log masuk: ${localStorage.getItem('bmi_userEmail')}`;
+                document.getElementById('userDisplay').innerText = `ID: ${localStorage.getItem('bmi_userLabel')}`;
                 setupSync();
             } else {
                 document.getElementById('loginOverlay').classList.remove('hidden');
             }
         });
 
-        // --- FIRESTORE SYNC ---
         function setupSync() {
             const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi');
             onSnapshot(colRef, (snapshot) => {
                 dataMurid = snapshot.docs.map(d => ({ docId: d.id, ...d.data() }));
                 renderAll();
-            }, (err) => console.error("Firestore sync error:", err));
+            });
         }
 
         function calculateStatus(bmi) {
@@ -420,20 +362,6 @@
             return 'Obesiti';
         }
 
-        // --- CETAK LOGIC ---
-        window.handlePrint = function() {
-            const date = new Date().toLocaleDateString('ms-MY', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            document.getElementById('printDate').innerText = date;
-            window.print();
-        };
-
-        // --- SIMPAN REKOD ---
         document.getElementById('bmiForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -443,8 +371,6 @@
             const penggal = document.getElementById('penggal').value;
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> MENYIMPAN...';
-
             const bmi = parseFloat((berat / (tinggi * tinggi)).toFixed(2));
             const status = calculateStatus(bmi);
             const docId = `${nama.replace(/\s+/g, '_')}_${penggal.replace(/\s+/g, '_')}`;
@@ -455,26 +381,22 @@
                 });
                 document.getElementById('bmiForm').reset();
                 showSuccess();
-            } catch (err) {
-                console.error("Save error", err);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> SIMPAN REKOD';
             }
         });
 
-        // --- PADAM REKOD ---
+        window.handlePrint = function() {
+            document.getElementById('printDate').innerText = new Date().toLocaleString('ms-MY');
+            window.print();
+        };
+
         window.deleteRecord = async (docId) => {
-            if (confirm('Padam rekod ini secara kekal dari Firestore?')) {
-                try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId));
-                } catch (err) {
-                    console.error("Delete error", err);
-                }
+            if (confirm('Padam rekod ini?')) {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId));
             }
         };
 
-        // --- EDIT REKOD ---
         window.openEdit = (docId) => {
             const item = dataMurid.find(m => m.docId === docId);
             if (!item) return;
@@ -491,61 +413,38 @@
             const docId = document.getElementById('editDocId').value;
             const berat = parseFloat(document.getElementById('editBerat').value);
             const tinggi = parseFloat(document.getElementById('editTinggi').value);
-            const btn = document.getElementById('saveEditBtn');
-
-            if (!berat || !tinggi) return;
-            btn.disabled = true;
-            btn.innerText = "KEMASKINI...";
-
             const bmi = parseFloat((berat / (tinggi * tinggi)).toFixed(2));
             const status = calculateStatus(bmi);
 
-            try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId), {
-                    berat, tinggi, bmi, status, updatedAt: Date.now()
-                });
-                closeEdit();
-            } catch (err) {
-                console.error("Update error", err);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "SIMPAN";
-            }
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId), {
+                berat, tinggi, bmi, status, updatedAt: Date.now()
+            });
+            closeEdit();
         };
 
-        // --- UI RENDERING ---
         function renderAll() {
             renderTable();
             updateStats();
-            renderComparison();
             if(!document.getElementById('tab3').classList.contains('hidden')) renderChart();
         }
 
         function renderTable() {
             const table = document.getElementById('rekodTable');
-            const empty = document.getElementById('emptyState');
             table.innerHTML = '';
-            
-            if (dataMurid.length === 0) {
-                empty.classList.remove('hidden');
-                return;
-            }
-            empty.classList.add('hidden');
-
             [...dataMurid].sort((a,b) => a.nama.localeCompare(b.nama)).forEach((item, idx) => {
                 const badge = item.status === 'Normal' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
                 table.innerHTML += `
-                    <tr class="hover:bg-purple-50 transition-all border-b border-gray-50">
+                    <tr>
                         <td class="p-4 text-xs font-bold text-gray-400">${idx+1}</td>
                         <td class="p-4 text-sm font-medium text-purple-600">${item.penggal}</td>
                         <td class="p-4 text-sm font-bold text-gray-800">${item.nama}</td>
-                        <td class="p-4 text-sm text-center font-mono">${item.berat}</td>
-                        <td class="p-4 text-sm text-center font-mono">${item.tinggi}</td>
+                        <td class="p-4 text-sm text-center">${item.berat}</td>
+                        <td class="p-4 text-sm text-center">${item.tinggi}</td>
                         <td class="p-4 text-sm text-center font-bold text-purple-700">${item.bmi}</td>
                         <td class="p-4 text-center"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${badge}">${item.status}</span></td>
                         <td class="p-4 text-center no-print space-x-3">
-                            <button onclick="openEdit('${item.docId}')" class="text-blue-500 hover:scale-110 transition-transform"><i class="fas fa-edit"></i></button>
-                            <button onclick="deleteRecord('${item.docId}')" class="text-red-400 hover:text-red-600 hover:scale-110 transition-transform"><i class="fas fa-trash"></i></button>
+                            <button onclick="openEdit('${item.docId}')" class="text-blue-500"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteRecord('${item.docId}')" class="text-red-400"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
@@ -555,38 +454,7 @@
             if (dataMurid.length === 0) return;
             document.getElementById('statTotal').innerText = dataMurid.length;
             document.getElementById('statNormal').innerText = dataMurid.filter(m => m.status === 'Normal').length;
-            document.getElementById('statRisk').innerText = dataMurid.filter(m => m.status === 'Berlebihan Berat' || m.status === 'Obesiti').length;
-        }
-
-        function renderComparison() {
-            const body = document.getElementById('comparisonTable');
-            if (!body) return;
-            body.innerHTML = '';
-            
-            const group = {};
-            dataMurid.forEach(m => {
-                if(!group[m.nama]) group[m.nama] = { p1: '-', p2: '-' };
-                if(m.penggal === 'Penggal 1') group[m.nama].p1 = m.bmi;
-                if(m.penggal === 'Penggal 2') group[m.nama].p2 = m.bmi;
-            });
-
-            Object.keys(group).sort().forEach(name => {
-                const { p1, p2 } = group[name];
-                let diff = '-', trend = '-';
-                if(p1 !== '-' && p2 !== '-') {
-                    const v = (p2 - p1).toFixed(2);
-                    diff = v > 0 ? `+${v}` : v;
-                    trend = v > 0 ? '<span class="text-red-500">↑ Naik</span>' : v < 0 ? '<span class="text-green-500">↓ Turun</span>' : 'Kekal';
-                }
-                body.innerHTML += `
-                    <tr>
-                        <td class="p-4 font-bold text-gray-700">${name}</td>
-                        <td class="p-4 text-center font-mono">${p1}</td>
-                        <td class="p-4 text-center font-mono">${p2}</td>
-                        <td class="p-4 text-center font-bold">${diff}</td>
-                        <td class="p-4 text-center font-bold text-xs uppercase">${trend}</td>
-                    </tr>`;
-            });
+            document.getElementById('statRisk').innerText = dataMurid.filter(m => m.status !== 'Normal').length;
         }
 
         function renderChart() {
@@ -594,32 +462,25 @@
             if(!ctx) return;
             const counts = { 'Kurus':0, 'Normal':0, 'Berlebihan Berat':0, 'Obesiti':0 };
             dataMurid.forEach(m => counts[m.status]++);
-            
             if(myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(counts),
                     datasets: [{ data: Object.values(counts), backgroundColor: ['#93c5fd','#34d399','#fbbf24','#f87171'] }]
-                },
-                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                }
             });
         }
 
         window.switchTab = (id) => {
-            ['tab1','tab2','tab3'].forEach(t => {
-                document.getElementById(t).classList.add('hidden');
-                document.getElementById('btn-'+t).className = 'flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 text-gray-500 min-w-max';
-            });
+            ['tab1','tab2','tab3'].forEach(t => document.getElementById(t).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            document.getElementById('btn-'+id).className = 'flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 tab-active min-w-max';
             if(id === 'tab3') setTimeout(renderChart, 100);
         };
 
         function showSuccess() {
-            const m = document.getElementById('successMsg');
-            m.classList.remove('hidden');
-            setTimeout(() => m.classList.add('hidden'), 3000);
+            document.getElementById('successMsg').classList.remove('hidden');
+            setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
         }
     </script>
 </body>
