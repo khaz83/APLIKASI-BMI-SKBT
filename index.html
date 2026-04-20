@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard BMI SKBT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .purple-gradient {
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+        }
+
+        .tab-active {
+            border-bottom: 4px solid #6d28d9;
+            color: #6d28d9;
+        }
+
+        /* Gaya Khusus Cetakan */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            main {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            .bg-white {
+                box-shadow: none !important;
+                border: none !important;
+            }
+            #tab2 {
+                display: block !important;
+            }
+            /* Memastikan jadual penuh pada kertas A4 */
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #e5e7eb !important;
+                padding: 8px !important;
+            }
+            .purple-gradient {
+                background: none !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- LOGIN SECTION -->
+    <div id="loginOverlay" class="fixed inset-0 z-[100] purple-gradient flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center">
+            <div class="bg-purple-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-user-shield text-purple-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Sistem BMI SKBT</h2>
+            <p class="text-gray-500 mb-8">Sila log masuk untuk akses sistem</p>
+            
+            <div class="space-y-4 text-left">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-gray-500 ml-1 uppercase">Alamat Emel</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="email" id="loginEmail" placeholder="nama@email.com" 
+                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-gray-500 ml-1 uppercase">Kata Laluan</label>
+                    <div class="relative">
+                        <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="loginPass" placeholder="••••••••" 
+                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all">
+                    </div>
+                </div>
+
+                <button onclick="handleLogin()" class="w-full py-4 mt-4 purple-gradient text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all uppercase tracking-wide">
+                    LOG MASUK
+                </button>
+                <p id="loginError" class="hidden text-red-500 text-center text-sm font-medium mt-2 animate-pulse">E-mel atau Kata laluan salah!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTENT -->
+    <div id="appContent" class="hidden">
+        <!-- Header Section -->
+        <header class="purple-gradient text-white p-6 shadow-lg no-print">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white p-2 rounded-lg">
+                        <i class="fas fa-weight text-purple-700 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">BMI SKBT</h1>
+                        <p class="text-purple-200 text-sm" id="userDisplay">Memuatkan...</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden md:block">
+                        <span class="bg-purple-800 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                            Kelas 6 Ar-Razi
+                        </span>
+                    </div>
+                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-md">
+                        <i class="fas fa-sign-out-alt"></i> KELUAR
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-white shadow-sm sticky top-0 z-10 no-print">
+            <div class="max-w-6xl mx-auto flex overflow-x-auto">
+                <button onclick="switchTab('tab1')" id="btn-tab1" class="flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 tab-active min-w-max">
+                    <i class="fas fa-edit mr-2"></i> KEMASUKAN
+                </button>
+                <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 text-gray-500 min-w-max">
+                    <i class="fas fa-list mr-2"></i> REKOD MURID
+                </button>
+                <button onclick="switchTab('tab3')" id="btn-tab3" class="flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 text-gray-500 min-w-max">
+                    <i class="fas fa-chart-pie mr-2"></i> ANALISIS
+                </button>
+            </div>
+        </nav>
+
+        <main class="max-w-6xl mx-auto p-4 md:p-8">
+            
+            <!-- Header khusus untuk cetakan -->
+            <div class="hidden print-only mb-8 text-center border-b-2 border-black pb-4">
+                <h1 class="text-2xl font-bold uppercase">Laporan BMI Murid SKBT</h1>
+                <p class="text-lg">Kelas: 6 Ar-Razi</p>
+                <p class="text-sm">Tarikh Cetakan: <span id="printDate"></span></p>
+            </div>
+
+            <!-- TAB 1: KEMASUKAN -->
+            <section id="tab1" class="space-y-6 no-print">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="w-2 h-8 bg-purple-600 rounded-full mr-3"></span>
+                        Daftar Murid Baru
+                    </h2>
+                    
+                    <form id="bmiForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-600">Pilih Penggal</label>
+                            <select id="penggal" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+                                <option value="Penggal 1">Penggal Satu</option>
+                                <option value="Penggal 2">Penggal Dua</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2 lg:col-span-1">
+                            <label class="text-sm font-bold text-gray-600">Nama Murid</label>
+                            <select id="nama" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" required>
+                                <option value="" disabled selected>Pilih nama murid...</option>
+                                <option value="ADAM MIKHAEL BIN MOHAMAD AZHARRIZAN">ADAM MIKHAEL BIN MOHAMAD AZHARRIZAN</option>
+                                <option value="AHMAD ZIKRI BIN KAMARUL ARIFIN">AHMAD ZIKRI BIN KAMARUL ARIFIN</option>
+                                <option value="INTAN QALIESYAH BINTI ABDUL MALIK">INTAN QALIESYAH BINTI ABDUL MALIK</option>
+                                <option value="MOHAMAD WAFIY ZIKRY BIN MOHD HAZLAN">MOHAMAD WAFIY ZIKRY BIN MOHD HAZLAN</option>
+                                <option value="MUHAMMAD ANIQ ASHRAF BIN NOR HAFIZ">MUHAMMAD ANIQ ASHRAF BIN NOR HAFIZ</option>
+                                <option value="MUHAMMAD ARYAN THAQIF BIN MOHD SAHRIZZAN">MUHAMMAD ARYAN THAQIF BIN MOHD SAHRIZZAN</option>
+                                <option value="MUHAMMAD FAHIM AQIL BIN MUHAMMAD FAEZAL AZHAR">MUHAMMAD FAHIM AQIL BIN MUHAMMAD FAEZAL AZHAR</option>
+                                <option value="MUHAMMAD FARIESH BIN OTHMAN">MUHAMMAD FARIESH BIN OTHMAN</option>
+                                <option value="MUHAMMAD MUSAB BIN WIDODO">MUHAMMAD MUSAB BIN WIDODO</option>
+                                <option value="MUHAMMAD SYAFI AMZAR BIN MD AZROL">MUHAMMAD SYAFI AMZAR BIN MD AZROL</option>
+                                <option value="MUHAMMAD SYAFIQ HAKIMI BIN MUHAMMAD ISKANDAR">MUHAMMAD SYAFIQ HAKIMI BIN MUHAMMAD ISKANDAR</option>
+                                <option value="MUHAMMAD THAQIF ADLI BIN SHAHRUDIN">MUHAMMAD THAQIF ADLI BIN SHAHRUDIN</option>
+                                <option value="NUR AINA QHALISA BINTI JOHAN">NUR AINA QHALISA BINTI JOHAN</option>
+                                <option value="NURAIN DAMIA BINTI MD SA'AT">NURAIN DAMIA BINTI MD SA'AT</option>
+                                <option value="NUR ALISHA SOFIA BINTI MOHD ISMAIL">NUR ALISHA SOFIA BINTI MOHD ISMAIL</option>
+                                <option value="NUR AMAR HANIF BIN NORHAIZAD">NUR AMAR HANIF BIN NORHAIZAD</option>
+                                <option value="NUR AMMARA KHAIRA BINTI MOHD HAIRUL ZAHIM">NUR AMMARA KHAIRA BINTI MOHD HAIRUL ZAHIM</option>
+                                <option value="NUR AMNA HANIS BINTI NORHAIZAD">NUR AMNA HANIS BINTI NORHAIZAD</option>
+                                <option value="NUR QAIREEN IRDINA BINTI MOHD YAZID">NUR QAIREEN IRDINA BINTI MOHD YAZID</option>
+                                <option value="NUR ZAFIRRA HASYIKIN BINTI HAMYZUN">NUR ZAFIRRA HASYIKIN BINTI HAMYZUN</option>
+                                <option value="RAYYAN DZAKWAN BIN MOHD ZAMSYAH">RAYYAN DZAKWAN BIN MOHD ZAMSYAH</option>
+                                <option value="UMMIE ZHULAIKA BINTI MOHD NAZRI">UMMIE ZHULAIKA BINTI MOHD NAZRI</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-600">Berat (kg)</label>
+                            <input type="number" step="0.1" id="berat" placeholder="0.0" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" required>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-600">Tinggi (m)</label>
+                            <input type="number" step="0.01" id="tinggi" placeholder="0.00" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" required>
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-4 mt-2">
+                            <button type="submit" id="submitBtn" class="w-full md:w-auto px-10 py-3 purple-gradient text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-save"></i> SIMPAN REKOD
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="successMsg" class="hidden bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative animate-pulse" role="alert">
+                    <span class="block sm:inline">Data berjaya disegerakkan ke Firestore!</span>
+                </div>
+            </section>
+
+            <!-- TAB 2: REKOD -->
+            <section id="tab2" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-purple-100">
+                    <div class="p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-100 no-print">
+                        <h2 class="text-xl font-bold text-gray-800">Senarai Rekod Murid</h2>
+                        <button onclick="handlePrint()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-bold transition-all flex items-center gap-2">
+                            <i class="fas fa-print"></i> CETAK REKOD
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Bil</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Penggal</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Murid</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Berat (kg)</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Tinggi (m)</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">BMI</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Status</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider no-print text-center">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rekodTable" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyState" class="p-12 text-center text-gray-400 no-print">
+                        <i class="fas fa-folder-open text-4xl mb-3"></i>
+                        <p>Tiada rekod dijumpai. Sila tambah rekod baru.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: ANALISIS -->
+            <section id="tab3" class="hidden space-y-6 no-print">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Graf Taburan Status BMI</h2>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="bmiChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Ringkasan Statistik</h2>
+                        <div class="space-y-4" id="statsContainer">
+                            <div class="flex justify-between items-center p-3 bg-purple-50 rounded-xl">
+                                <span class="text-purple-700 font-medium">Jumlah Murid</span>
+                                <span id="statTotal" class="text-2xl font-bold text-purple-900">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-green-50 rounded-xl">
+                                <span class="text-green-700 font-medium">BMI Normal</span>
+                                <span id="statNormal" class="text-2xl font-bold text-green-900">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-red-50 rounded-xl">
+                                <span class="text-red-700 font-medium">Risiko Obesiti</span>
+                                <span id="statRisk" class="text-2xl font-bold text-red-900">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-purple-100">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="w-2 h-8 bg-purple-600 rounded-full mr-3"></span>
+                        Perbandingan: Penggal 1 vs Penggal 2
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 border-b">
+                                <tr>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase">Nama Murid</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">BMI P1</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">BMI P2</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Perbezaan</th>
+                                    <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonTable" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[110] backdrop-blur-sm no-print">
+        <div class="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl scale-in">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
+                    <i class="fas fa-edit text-xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Kemaskini Rekod</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <input type="hidden" id="editDocId">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Nama & Penggal</label>
+                    <input type="text" id="editNama" class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 font-semibold text-gray-500" readonly>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Berat (kg)</label>
+                        <input type="number" step="0.1" id="editBerat" class="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none transition-all" placeholder="0.0">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Tinggi (m)</label>
+                        <input type="number" step="0.01" id="editTinggi" class="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none transition-all" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeEdit()" class="flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-bold transition-all">BATAL</button>
+                <button onclick="saveEdit()" id="saveEditBtn" class="flex-1 py-4 purple-gradient text-white rounded-2xl font-bold shadow-lg hover:opacity-90 transition-all">SIMPAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyAlwzQ8MH6U8klr59seUB-OLqLtRWIONkM",
+          authDomain: "aplikasi-bmi-skbt.firebaseapp.com",
+          projectId: "aplikasi-bmi-skbt",
+          storageBucket: "aplikasi-bmi-skbt.firebasestorage.app",
+          messagingSenderId: "903427598111",
+          appId: "1:903427598111:web:d4a1962a2e44385749b22a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = "aplikasi-bmi-skbt";
+
+        const ALLOWED_EMAILS = ["kazfa2000@gmail.com", "g-81430999@moe-dl.edu.my"];
+        const DEFAULT_PASS = "jba2054";
+        let dataMurid = [];
+        let myChart = null;
+
+        // --- AUTH LOGIC ---
+        window.handleLogin = async function() {
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPass').value.trim();
+            const error = document.getElementById('loginError');
+
+            if (ALLOWED_EMAILS.includes(email) && pass === DEFAULT_PASS) {
+                try {
+                    await signInAnonymously(auth);
+                    localStorage.setItem('bmi_isLoggedIn', 'true');
+                    localStorage.setItem('bmi_userEmail', email);
+                } catch (e) {
+                    console.error("Auth error", e);
+                }
+            } else {
+                error.classList.remove('hidden');
+            }
+        };
+
+        window.handleLogout = async function() {
+            if(confirm('Log keluar sistem?')) {
+                await signOut(auth);
+                localStorage.clear();
+                location.reload();
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && localStorage.getItem('bmi_isLoggedIn') === 'true') {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('appContent').classList.remove('hidden');
+                document.getElementById('userDisplay').innerText = `Log masuk: ${localStorage.getItem('bmi_userEmail')}`;
+                setupSync();
+            } else {
+                document.getElementById('loginOverlay').classList.remove('hidden');
+            }
+        });
+
+        // --- FIRESTORE SYNC ---
+        function setupSync() {
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi');
+            onSnapshot(colRef, (snapshot) => {
+                dataMurid = snapshot.docs.map(d => ({ docId: d.id, ...d.data() }));
+                renderAll();
+            }, (err) => console.error("Firestore sync error:", err));
+        }
+
+        function calculateStatus(bmi) {
+            if (bmi < 18.5) return 'Kurus';
+            if (bmi < 25) return 'Normal';
+            if (bmi < 30) return 'Berlebihan Berat';
+            return 'Obesiti';
+        }
+
+        // --- CETAK LOGIC ---
+        window.handlePrint = function() {
+            const date = new Date().toLocaleDateString('ms-MY', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('printDate').innerText = date;
+            window.print();
+        };
+
+        // --- SIMPAN REKOD ---
+        document.getElementById('bmiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const nama = document.getElementById('nama').value;
+            const berat = parseFloat(document.getElementById('berat').value);
+            const tinggi = parseFloat(document.getElementById('tinggi').value);
+            const penggal = document.getElementById('penggal').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> MENYIMPAN...';
+
+            const bmi = parseFloat((berat / (tinggi * tinggi)).toFixed(2));
+            const status = calculateStatus(bmi);
+            const docId = `${nama.replace(/\s+/g, '_')}_${penggal.replace(/\s+/g, '_')}`;
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId), {
+                    nama, berat, tinggi, penggal, bmi, status, updatedAt: Date.now()
+                });
+                document.getElementById('bmiForm').reset();
+                showSuccess();
+            } catch (err) {
+                console.error("Save error", err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> SIMPAN REKOD';
+            }
+        });
+
+        // --- PADAM REKOD ---
+        window.deleteRecord = async (docId) => {
+            if (confirm('Padam rekod ini secara kekal dari Firestore?')) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId));
+                } catch (err) {
+                    console.error("Delete error", err);
+                }
+            }
+        };
+
+        // --- EDIT REKOD ---
+        window.openEdit = (docId) => {
+            const item = dataMurid.find(m => m.docId === docId);
+            if (!item) return;
+            document.getElementById('editDocId').value = docId;
+            document.getElementById('editNama').value = `${item.nama} (${item.penggal})`;
+            document.getElementById('editBerat').value = item.berat;
+            document.getElementById('editTinggi').value = item.tinggi;
+            document.getElementById('editModal').classList.remove('hidden');
+        };
+
+        window.closeEdit = () => document.getElementById('editModal').classList.add('hidden');
+
+        window.saveEdit = async () => {
+            const docId = document.getElementById('editDocId').value;
+            const berat = parseFloat(document.getElementById('editBerat').value);
+            const tinggi = parseFloat(document.getElementById('editTinggi').value);
+            const btn = document.getElementById('saveEditBtn');
+
+            if (!berat || !tinggi) return;
+            btn.disabled = true;
+            btn.innerText = "KEMASKINI...";
+
+            const bmi = parseFloat((berat / (tinggi * tinggi)).toFixed(2));
+            const status = calculateStatus(bmi);
+
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rekod_bmi', docId), {
+                    berat, tinggi, bmi, status, updatedAt: Date.now()
+                });
+                closeEdit();
+            } catch (err) {
+                console.error("Update error", err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "SIMPAN";
+            }
+        };
+
+        // --- UI RENDERING ---
+        function renderAll() {
+            renderTable();
+            updateStats();
+            renderComparison();
+            if(!document.getElementById('tab3').classList.contains('hidden')) renderChart();
+        }
+
+        function renderTable() {
+            const table = document.getElementById('rekodTable');
+            const empty = document.getElementById('emptyState');
+            table.innerHTML = '';
+            
+            if (dataMurid.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            [...dataMurid].sort((a,b) => a.nama.localeCompare(b.nama)).forEach((item, idx) => {
+                const badge = item.status === 'Normal' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                table.innerHTML += `
+                    <tr class="hover:bg-purple-50 transition-all border-b border-gray-50">
+                        <td class="p-4 text-xs font-bold text-gray-400">${idx+1}</td>
+                        <td class="p-4 text-sm font-medium text-purple-600">${item.penggal}</td>
+                        <td class="p-4 text-sm font-bold text-gray-800">${item.nama}</td>
+                        <td class="p-4 text-sm text-center font-mono">${item.berat}</td>
+                        <td class="p-4 text-sm text-center font-mono">${item.tinggi}</td>
+                        <td class="p-4 text-sm text-center font-bold text-purple-700">${item.bmi}</td>
+                        <td class="p-4 text-center"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${badge}">${item.status}</span></td>
+                        <td class="p-4 text-center no-print space-x-3">
+                            <button onclick="openEdit('${item.docId}')" class="text-blue-500 hover:scale-110 transition-transform"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteRecord('${item.docId}')" class="text-red-400 hover:text-red-600 hover:scale-110 transition-transform"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function updateStats() {
+            if (dataMurid.length === 0) return;
+            document.getElementById('statTotal').innerText = dataMurid.length;
+            document.getElementById('statNormal').innerText = dataMurid.filter(m => m.status === 'Normal').length;
+            document.getElementById('statRisk').innerText = dataMurid.filter(m => m.status === 'Berlebihan Berat' || m.status === 'Obesiti').length;
+        }
+
+        function renderComparison() {
+            const body = document.getElementById('comparisonTable');
+            if (!body) return;
+            body.innerHTML = '';
+            
+            const group = {};
+            dataMurid.forEach(m => {
+                if(!group[m.nama]) group[m.nama] = { p1: '-', p2: '-' };
+                if(m.penggal === 'Penggal 1') group[m.nama].p1 = m.bmi;
+                if(m.penggal === 'Penggal 2') group[m.nama].p2 = m.bmi;
+            });
+
+            Object.keys(group).sort().forEach(name => {
+                const { p1, p2 } = group[name];
+                let diff = '-', trend = '-';
+                if(p1 !== '-' && p2 !== '-') {
+                    const v = (p2 - p1).toFixed(2);
+                    diff = v > 0 ? `+${v}` : v;
+                    trend = v > 0 ? '<span class="text-red-500">↑ Naik</span>' : v < 0 ? '<span class="text-green-500">↓ Turun</span>' : 'Kekal';
+                }
+                body.innerHTML += `
+                    <tr>
+                        <td class="p-4 font-bold text-gray-700">${name}</td>
+                        <td class="p-4 text-center font-mono">${p1}</td>
+                        <td class="p-4 text-center font-mono">${p2}</td>
+                        <td class="p-4 text-center font-bold">${diff}</td>
+                        <td class="p-4 text-center font-bold text-xs uppercase">${trend}</td>
+                    </tr>`;
+            });
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('bmiChart')?.getContext('2d');
+            if(!ctx) return;
+            const counts = { 'Kurus':0, 'Normal':0, 'Berlebihan Berat':0, 'Obesiti':0 };
+            dataMurid.forEach(m => counts[m.status]++);
+            
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{ data: Object.values(counts), backgroundColor: ['#93c5fd','#34d399','#fbbf24','#f87171'] }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        window.switchTab = (id) => {
+            ['tab1','tab2','tab3'].forEach(t => {
+                document.getElementById(t).classList.add('hidden');
+                document.getElementById('btn-'+t).className = 'flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 text-gray-500 min-w-max';
+            });
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById('btn-'+id).className = 'flex-1 py-4 px-6 text-sm font-semibold transition-all hover:bg-purple-50 tab-active min-w-max';
+            if(id === 'tab3') setTimeout(renderChart, 100);
+        };
+
+        function showSuccess() {
+            const m = document.getElementById('successMsg');
+            m.classList.remove('hidden');
+            setTimeout(() => m.classList.add('hidden'), 3000);
+        }
+    </script>
+</body>
+</html>
