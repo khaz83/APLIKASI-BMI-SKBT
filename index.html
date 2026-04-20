@@ -327,6 +327,7 @@
                     await signInWithEmailAndPassword(auth, email, pass)  ;
                     localStorage.setItem('bmi_isLoggedIn', 'true');
                     localStorage.setItem('bmi_userLabel', email);
+                    setupSync(); // terus load data 
                 } catch (e) {
                     error.classList.remove('hidden');
                 }
