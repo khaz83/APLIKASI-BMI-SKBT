@@ -96,6 +96,11 @@
                 <button onclick="handleLogin()" class="w-full py-4 mt-4 purple-gradient text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all uppercase tracking-wide">
                     LOG MASUK
                 </button>
+                <p style="text-align:center; margin-top:10px;">
+              <a href="#" onclick="resetPassword()" style="color:#6d28d9; font-weight:bold;">
+                Lupa Password?
+              </a>
+                </p>
                 <p id="loginError" class="hidden text-red-500 text-center text-sm font-medium mt-2 animate-pulse">Sila masukkan maklumat log masuk yang sah.</p>
             </div>
         </div>
@@ -294,7 +299,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth,signInWithEmailAndPassword ,sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyAlwzQ8MH6U8klr59seUB-OLqLtRWIONkM",
@@ -329,7 +334,22 @@
                 error.classList.remove('hidden');
             }
         };
+        // ✅ TAMBAH DI SINI
+window.resetPassword = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
 
+    if (!email) {
+        alert("Sila masukkan email dahulu!");
+        return;
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Link reset password telah dihantar ke email!");
+    } catch (e) {
+        alert("Ralat: " + e.message);
+    }
+};
         window.handleLogout = async function() {
             await signOut(auth);
             localStorage.clear();
